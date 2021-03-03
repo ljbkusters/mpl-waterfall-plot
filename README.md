@@ -1,6 +1,6 @@
 # Matplotlib-based waterfall plot
 
-This repo contains some code to generate Mathematica-like quasi 3D waterfall plot using python and matplotlib. The goal was to create something resembling the image below:
+This repo contains some code to generate Matlab/Origin-like quasi 3D waterfall plot using python and matplotlib. The goal was to create something resembling the image below:
 
 ![goal waterfall plot](colored_waterfall2.png)
 
