@@ -10,7 +10,7 @@ Nz = 91
 x = np.linspace(-10, 10, Nx)
 z = 0.1*np.linspace(-10, 10, Nz)**2 + 4
 
-w = 2*np.pi
+w = 2*np.pi # omega
 
 y = np.zeros((Nx, Nz))
 for i in range(Nz):
@@ -22,39 +22,44 @@ ax = fig.add_subplot(111)
 for side in ['right', 'top', 'left']:
     ax.spines[side].set_visible(False)
 
+# some usefull parameters
 highest = np.max(y)
 lowest = np.min(y)
 delta = highest-lowest
-t = np.sqrt(abs(delta))/10
-bottom = lowest*np.ones(Nx)
+t = np.sqrt(abs(delta))/10 # a tuning parameter for the offset of each dataset
 
-cmap= plt.get_cmap('viridis')
 for i in np.flip(range(Nz)):
-    yi_ = y[:,i]
-    yi = yi_ + i*t
-    zindex = Nz-i
+    yi_ = y[:,i]       # the y data set
+    yi = yi_ + i*t   # the shifted y data set used for plotting
+    zindex = Nz-i # used to set zorder
 
+    # fill with white from the (shifted) y data down to the lowest value
+    # for good results, don't make the alpha too low, otherwise you'll get confusing blending of lines
     ax.fill_between(x, lowest, yi, facecolor="white", alpha=0.5, zorder=zindex)
 
+    # cut the data into segments that can be colored individually
     points = np.array([x, yi]).T.reshape(-1, 1, 2)
     segments = np.concatenate([points[:-1], points[1:]], axis=1)
 
     # Create a continuous norm to map from data points to colors
     norm = plt.Normalize(lowest, highest)
     lc = LineCollection(segments, cmap='plasma', norm=norm)
+    
     # Set the values used for colormapping
     lc.set_array(yi_)
     lc.set_zorder(zindex)
     lc.set_linewidth(1)
     line = ax.add_collection(lc)
+    
+    # print text indicating angle
     delta_x = max(x)-min(x)
     if (i)%10==0:
         ax.text(min(x)-5e-2*delta_x, t*i, "$\\theta=%i^\\circ$"%i, horizontalAlignment="right")
 
+# set limits, as using LineCollection does not automatically set these
 ax.set_ylim(lowest, highest + Nz*t)
 ax.set_xlim(-10, 10)
 fig.colorbar(line, ax=ax)
-print("saving image...")
 plt.yticks([])
 ax.yaxis.set_ticks_position('none')
 fig.savefig("waterfall_plot_cmap")
